@@ -9,6 +9,13 @@ import lombok.Data;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String username;
+//    private Long id;
+//    private String username;
+    private int id;
+    private String name;
+    private String password;
+    private int age;
+    private String phone;
+    private String sex;
+    private int root;
 }

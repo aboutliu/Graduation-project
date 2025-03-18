@@ -1,56 +1,27 @@
-<!-- <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <h1>hello Jiangyuhuai!</h1>
-</template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style> -->
-
-<template>
+  <div>
   <div>
     <h2>用户管理</h2>
     
     <!-- 显示用户列表 -->
     <ul>
       <li v-for="user in users" :key="user.id">
-        {{ user.username }} 
+        {{ user.name }} 
         <button @click="deleteUser(user.id)">删除</button>
       </li>
     </ul>
 
     <!-- 添加新用户 -->
-    <input v-model="newUser" placeholder="输入用户名" />
+    <input v-model="name" placeholder="输入用户名" />
+    <input v-model="password" placeholder="输入密码" />
+    <input v-model="age" placeholder="输入年龄" />
+    <input v-model="phone" placeholder="输入电话" />
+    <input v-model="sex" placeholder="输入性别" />
     <button @click="addUser">添加用户</button>
+    </div>
+    <div >
+    <router-view></router-view>
+    </div>
   </div>
 </template>
 
@@ -61,7 +32,11 @@ export default {
   data() {
     return {
       users: [], // 用户列表
-      newUser: "", // 新增用户的名字
+      name: "", // 新增用户的名字
+      password: "",
+      age: "",
+      phone: "",
+      sex: "",
     };
   },
   methods: {
@@ -77,13 +52,21 @@ export default {
 
     // 添加用户
     async addUser() {
-      if (!this.newUser) return;
+      if (!this.name) return;
       try {
         const response = await axios.post("http://localhost:8080/users", {
-          username: this.newUser,
+          name: this.name,
+          password: this.password,
+          age: this.age,
+          phone: this.phone,
+          sex: this.sex,
         });
         this.users.push(response.data); // 直接更新本地数据
-        this.newUser = "";
+        this.name = "";
+        this.password = "";
+        this.age = "";
+        this.phone = "";
+        this.sex = "";
       } catch (error) {
         console.error("添加用户失败", error);
       }
@@ -102,5 +85,14 @@ export default {
   mounted() {
     this.fetchUsers(); // 组件加载时获取用户
   },
+  // mounted() {
+  //   // 判断是否登录
+  //   this.isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  //   if (this.isLoggedIn) {
+  //     this.fetchUsers(); // 获取用户列表
+  //   } else {
+  //     this.fetchUsers();
+  //   }
+  // },
 };
 </script>

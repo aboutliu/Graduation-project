@@ -20,6 +20,16 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    //查找用户
+    public Optional<User> findByName(String name) {
+        return userRepository.findByName(name);
+    }
+
+    //验证密码
+    public boolean checkPassword(String rawPassword, String storedPassword) {
+        return rawPassword.equals(storedPassword);  // 比较明文密码
+    }
+
     public User createUser(User user) {
         return userRepository.save(user);
     }
