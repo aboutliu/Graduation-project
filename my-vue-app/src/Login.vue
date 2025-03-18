@@ -3,6 +3,7 @@
       <div class="login-card">
         <h2 class="login-title">用户登录</h2>
         <form @submit.prevent="login" class="login-form">
+          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
           <div class="input-group">
             <label for="name">用户名:</label>
             <input v-model="name" type="text" id="name" placeholder="请输入用户名" />
@@ -32,12 +33,13 @@
         name: "",
         password: "",
         showPassword: false,  // 控制密码显示或隐藏
+        errorMessage: "",  // 存储错误信息
       };
     },
     methods: {
       async login() {
         if (!this.name || !this.password) {
-          alert("请填写用户名和密码！");
+          this.errorMessage = "请填写用户名和密码！";
           return;
         }
         try {
@@ -48,11 +50,10 @@
           if (response.data.success) {
             this.$router.push("/Success"); // 登录成功后跳转到用户主页
           } else {
-            alert("登录失败！");
+            this.errorMessage = response.data.message || "登录失败";
           }
         } catch (error) {
-          console.error("登录请求失败", error);
-          alert("服务器错误，请稍后再试！");
+          this.errorMessage = error.response?.data?.message || "服务器错误，请稍后再试！";
         }
       },
       // 切换密码显示状态
@@ -158,5 +159,11 @@
     cursor: pointer;
     font-size: 18px;
     color: #888;
+  }
+
+  .error-message {
+    color: red;
+    margin-bottom: 10px;
+    font-size: 14px;
   }
   </style>
