@@ -1,4 +1,4 @@
-package org.example.springbootdemo.repository;
+package org.example.springbootdemo.repository.primary;
 
 import org.example.springbootdemo.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

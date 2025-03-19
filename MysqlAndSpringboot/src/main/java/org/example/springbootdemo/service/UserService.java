@@ -1,7 +1,7 @@
 package org.example.springbootdemo.service;
 
 import org.example.springbootdemo.model.User;
-import org.example.springbootdemo.repository.UserRepository;
+import org.example.springbootdemo.repository.primary.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
