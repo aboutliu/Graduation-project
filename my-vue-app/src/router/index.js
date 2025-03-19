@@ -6,18 +6,22 @@ import Success from '@/Success.vue';
 const routes = [
   {
     path: '/',
+    redirect: '/login'  // 默认跳转到 /login
+  },
+  {
+    path: '/login',
     name: 'Login',
-    component: Login  // 默认显示 Login.vue
+    component: Login
   },
   {
-    path: '/Register',
+    path: '/register',
     name: 'Register',
-    component: Register  // 注册页面
+    component: Register
   },
   {
-    path: '/Success',
+    path: '/success',
     name: 'Success',
-    component: Success  // 注册页面
+    component: Success
   }
 ];
 

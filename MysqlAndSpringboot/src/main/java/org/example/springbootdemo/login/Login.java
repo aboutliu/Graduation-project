@@ -25,7 +25,6 @@ public class Login {
         // 检查用户名是否存在
         Optional<User> user = userService.findByName(request.getName());
         if (user.isEmpty()) {
-            System.out.println("用户不存在");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponse(false, "用户名不存在"));
         }
@@ -33,7 +32,6 @@ public class Login {
         User existingUser = user.get();
         // 验证密码是否正确
         if (!userService.checkPassword(request.getPassword(), existingUser.getPassword())) {
-            System.out.println("密码错误");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponse(false, "密码错误"));
         }

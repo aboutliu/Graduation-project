@@ -2,6 +2,8 @@ package org.example.springbootdemo.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.AllArgsConstructor;
+import org.example.springbootdemo.register.UserRegisterRequest;
 
 @Data
 @Entity

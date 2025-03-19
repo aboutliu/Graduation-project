@@ -10,10 +10,10 @@
           </div>
           <div class="input-group">
             <label for="password">密码:</label>
-            <div class="password-container">
+            <div class="input-container">
               <input v-model="password" :type="showPassword ? 'text' : 'password'" id="password" placeholder="请输入密码" />
-              <span class="eye-icon" @click="togglePasswordVisibility">
-                <i :class="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+              <span @click="showPassword = !showPassword" class="toggle-password">
+                {{ showPassword ? "👁" : "🙈" }}
               </span>
             </div>
           </div>
@@ -77,11 +77,11 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        /* background: linear-gradient(135deg, #6b8abf, #d0d9e2);  设置渐变背景 */
         height: 100vh;  /* 确保容器占满整个视口高度 */
         width: 170vh;
         margin: 0;
         padding: 0;
+        transform: translate(-80px, -50px); /* 向左移动 50px，向上移动 50px */
     }
 
     .login-card {
@@ -108,13 +108,29 @@
   .input-group {
     margin-bottom: 15px;
   }
+
+  .input-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+  }
+
+  .toggle-password {
+      position: absolute;
+      right: 10px;
+      cursor: pointer;
+  }
+
+  .input-group input {
+      width: 100%;
+      padding-right: 30px;
+  }
   
   input {
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
     margin-top: 5px;
-    width: 100%;
     font-size: 16px;
   }
   
@@ -147,20 +163,6 @@
     text-decoration: underline;
   }
   
-  .password-container {
-    position: relative;
-  }
-  
-  .eye-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    font-size: 18px;
-    color: #888;
-  }
-
   .error-message {
     color: red;
     margin-bottom: 10px;

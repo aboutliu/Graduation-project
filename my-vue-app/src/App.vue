@@ -1,27 +1,6 @@
 <template>
-  <div>
-  <div>
-    <h2>用户管理</h2>
-    
-    <!-- 显示用户列表 -->
-    <ul>
-      <li v-for="user in users" :key="user.id">
-        {{ user.name }} 
-        <button @click="deleteUser(user.id)">删除</button>
-      </li>
-    </ul>
-
-    <!-- 添加新用户 -->
-    <input v-model="name" placeholder="输入用户名" />
-    <input v-model="password" placeholder="输入密码" />
-    <input v-model="age" placeholder="输入年龄" />
-    <input v-model="phone" placeholder="输入电话" />
-    <input v-model="sex" placeholder="输入性别" />
-    <button @click="addUser">添加用户</button>
-    </div>
-    <div >
+  <div >
     <router-view></router-view>
-    </div>
   </div>
 </template>
 
