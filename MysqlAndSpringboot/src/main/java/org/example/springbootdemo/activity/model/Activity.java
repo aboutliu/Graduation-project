@@ -13,5 +13,8 @@ public class Activity {
     private String name;
     private String introduction;
     private String time;
-    private String others;
+    private String place;
+    private String editor;
+    private String image;
+    private String idname;
 }

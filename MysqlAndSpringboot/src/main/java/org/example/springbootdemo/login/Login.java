@@ -26,17 +26,18 @@ public class Login {
         Optional<User> user = userService.findByName(request.getName());
         if (user.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse(false, "用户名不存在"));
+                    .body(new ApiResponse(false, "用户名不存在", 0));
         }
 
         User existingUser = user.get();
         // 验证密码是否正确
         if (!userService.checkPassword(request.getPassword(), existingUser.getPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse(false, "密码错误"));
+                    .body(new ApiResponse(false, "密码错误", existingUser.getId()));
         }
 
         // 如果验证通过，返回成功的响应
-        return ResponseEntity.ok(new ApiResponse(true, "登录成功"));
+        System.out.println(existingUser.getId());
+        return ResponseEntity.ok(new ApiResponse(true, "登录成功", existingUser.getId()));
     }
 }

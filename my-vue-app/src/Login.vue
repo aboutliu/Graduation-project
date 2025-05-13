@@ -30,6 +30,7 @@
   export default {
     data() {
       return {
+        id: "",
         name: "",
         password: "",
         showPassword: false,  // 控制密码显示或隐藏
@@ -44,11 +45,14 @@
         }
         try {
           const response = await axios.post("http://localhost:8080/login", {
+            id: this.id,
             name: this.name,
             password: this.password,
           });
           if (response.data.success) {
-            this.$router.push("/Success"); // 登录成功后跳转到用户主页
+            console.log(response.data.id);
+            localStorage.setItem("userId", response.data.id); // ✅ 保存用户ID
+            this.$router.push("/Success"); // 登录成功后跳转
           } else {
             this.errorMessage = response.data.message || "登录失败";
           }

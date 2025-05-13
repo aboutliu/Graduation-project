@@ -37,13 +37,13 @@ public class Register {
             ApiResponse apiResponse = checkUserInfo.validateUserInfo(existingUser);
             if (apiResponse.isSuccess()) {
                 userService.createUser(existingUser);
-                return ResponseEntity.ok(new ApiResponse(true, "注册成功"));
+                return ResponseEntity.ok(new ApiResponse(true, "注册成功", 0));
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(apiResponse);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse(false, "用户已存在"));
+                    .body(new ApiResponse(false, "用户已存在", 0));
         }
     }
 }
