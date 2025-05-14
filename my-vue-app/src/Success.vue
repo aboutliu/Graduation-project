@@ -9,7 +9,7 @@
     </div>
 
     <!-- 用户界面 -->
-    <div class="avatar-wrapper" @click="goTo('/person')">
+    <div class="avatar-wrapper" @click="goTo('/personalactivity')">
       <img src="/images/background.jpg" alt="avatar" />
     </div>
   </template>

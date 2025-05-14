@@ -3,6 +3,7 @@ package org.example.springbootdemo.activity.controller;
 import org.example.springbootdemo.activity.model.Activity;
 import org.example.springbootdemo.activity.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -24,8 +25,6 @@ public class ActivityController {
     // 获取所有活动信息
     @GetMapping
     public List<Activity> getAllActivities() {
-        System.out.println(1);
-//        int len =
         return activityService.getAllActivities();
     }
 
@@ -48,15 +47,15 @@ public class ActivityController {
     }
 
     // 上传图片
-    @PostMapping("/uploadImage")
-    public String uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
-        String uploadDir = "images/";
-        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        File saveFile = new File(uploadDir + filename);
-        saveFile.getParentFile().mkdirs();
-        file.transferTo(saveFile);
-        return "/images/" + filename;
-    }
+//    @PostMapping("/uploadImage")
+//    public String uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
+//        String uploadDir = "images/";
+//        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+//        File saveFile = new File(uploadDir + filename);
+//        saveFile.getParentFile().mkdirs();
+//        file.transferTo(saveFile);
+//        return "/images/" + filename;
+//    }
 
     // 删除图片
     @DeleteMapping("/deleteImage")
@@ -69,9 +68,9 @@ public class ActivityController {
     }
 
     // 更新图片（删除旧图并上传新图）
-    @PostMapping("/updateImage")
-    public String updateImage(@RequestParam("oldPath") String oldPath, @RequestParam("file") MultipartFile file) throws IOException {
-        deleteImage(oldPath);
-        return uploadImage(file);
-    }
+//    @PostMapping("/updateImage")
+//    public String updateImage(@RequestParam("oldPath") String oldPath, @RequestParam("file") MultipartFile file) throws IOException {
+//        deleteImage(oldPath);
+//        return uploadImage(file);
+//    }
 }

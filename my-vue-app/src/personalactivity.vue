@@ -1,12 +1,20 @@
 <template>
     <div class="home-container">
+      <div class="sidebar-wrapper" @mouseover="showSidebar = true" @mouseleave="showSidebar = false">
+        <div class="sidebar" v-show="showSidebar">
+          <div class="sidebar-item" @click="goTo('/activity')">活动日历</div>
+          <div class="sidebar-item" @click="goTo('/resource')">资源分享</div>
+          <div class="sidebar-item" @click="goTo('/virtual')">虚拟空间</div>
+          <div class="sidebar-item" @click="goTo('/help')">紧急求助</div>
+          <div class="sidebar-item" @click="goTo('/success')">首页</div>
+        </div>
+      </div>
   
-      <div class="help-box" @click="goTo('/help')">我的资源</div>
-      <div class="talk-box" @click="showActivities = true">我的活动</div>
+      <div class="help-box" @click="goTo('/personalresource')">我的资源</div>
+      <div class="talk-box">我的活动</div>
       <div class="add-box" @click="showAddForm = !showAddForm">{{ showAddForm ? '关闭' : '添加' }}</div>
-      <!-- <div class="share-box" @click="goTo('/resource')">资源分享</div>
-      <div class="activity-box" @click="goTo('/activity')">活动日历</div> -->
-      <div v-if="showActivities" class="activity-viewer">
+    
+      <div class="activity-viewer">
             <button v-if="currentActivities.length > 0" class="arrow-button left" @click="goToPrevActivity">&#8592;</button>
             <input class="search-box" v-model="searchQuery" placeholder="🔍 搜索"/>
             <div class="activity-container">
@@ -55,6 +63,7 @@
   </template>
   
   <script setup>
+const showSidebar = ref(false);
 
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
@@ -69,26 +78,11 @@ const itemsPerPage = 3;
 const searchQuery = ref('');
 const userId = localStorage.getItem('userId') || '未登录';
 
-// const currentActivities = computed(() => {
-//     // 先筛选出 idname 包含 userId 的活动
-//   const filtered = activities.value.filter(
-//     act => act.idname && act.idname.includes(userId)
-//   );
-//   return activities.value.filter(act =>
-//       act.idname && act.idname.includes(userId + searchQuery.value)
-//     );
-// });
-
 const currentActivities = computed(() => {
   const filtered = activities.value.filter(
     act => act.idname && act.idname.includes(userId)
   );
 
-  // const searched = searchQuery.value.trim()
-  //   ? filtered.filter(act =>
-  //       JSON.stringify(act).includes(searchQuery.value)
-  //     )
-  //   : filtered;
   const searched = searchQuery.value.trim()
   ? filtered.filter(act =>
       (act.name && act.name.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
@@ -186,7 +180,7 @@ const handleImageUpload = async (e) => {
   formData.append('file', file, filename);
   
   try {
-    await axios.post('http://localhost:8080/uploadImage', formData);
+    await axios.post('http://localhost:8080/activity/uploadImage', formData);
     alert('try');
     uploadedImageName = filename;
     alert('上传成功');
@@ -225,6 +219,10 @@ const addActivity = async () => {
     });
     uploadedImageName = '';
   } catch (error) {
+    Object.assign(newActivity.value, {
+      name: '', time: '', place: '', editor: '', introduction: '', image: ''
+    });
+    uploadedImageName = '';
     console.error('添加失败', error);
     alert('添加失败');
   }
@@ -452,11 +450,10 @@ const closeAddForm = () => {
 }
 .search-box {
     position: fixed;
-    width:20vw;
+    width: 20vw;
     left: 61vw;
     top: 15vh;
-    color: #fff;
-    /* color:black; */
+    color: black;
     background-color: #f4f4f4;
     padding: 8px 16px;
     border-radius: 7px;
@@ -465,9 +462,9 @@ const closeAddForm = () => {
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 2px solid transparent; 
-    /* 初始无边框 */
-  }
+    border: 2px solid transparent;
+    outline: none;
+}
 .overlay-backdrop {
   position: fixed;
   top: 0;
@@ -567,4 +564,42 @@ const closeAddForm = () => {
     border: 2px solid #fff; /* 显示白色边框 */
     color: #fff; /* 字体保持白色 */
   }
+  .sidebar-wrapper {
+  position: fixed;
+  top: 0vh;
+  left: 0;
+  width: 40px;
+  height: 30vh;
+  z-index: 999;
+}
+
+.sidebar {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  width: 140px;
+  height: 30vh;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.sidebar-item {
+  padding: 8px;
+  margin-bottom: 6px;
+  background-color: #333;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.sidebar-item:hover {
+  background-color: #555;
+}
   </style>
+

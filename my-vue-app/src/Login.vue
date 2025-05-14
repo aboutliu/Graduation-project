@@ -26,6 +26,7 @@
   
   <script>
   import axios from "axios";
+  import { onMounted } from 'vue';  // 导入 onMounted
   
   export default {
     data() {
@@ -65,6 +66,31 @@
         this.showPassword = !this.showPassword;
       },
     },
+    setup() {
+    // 使用 onMounted 在组件挂载后执行代码
+    onMounted(() => {
+      const frontendPort = window.location.port;  // 获取当前前端端口号
+      // alert("Sending frontend port to backend:" + frontendPort); // 打印端口号
+
+      const backendUrl = 'http://localhost:8080/port/set-frontend-port';  // 后端接口路径
+
+      // 向后端发送前端的端口号
+      fetch(`${backendUrl}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ port: frontendPort }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        // alert("Backend response:" + data);  // 打印后端响应
+      })
+      .catch(error => {
+        // alert("Error sending port to backend:" + error);  // 捕获错误并打印
+      });
+    });
+  },
   };
   </script>
   

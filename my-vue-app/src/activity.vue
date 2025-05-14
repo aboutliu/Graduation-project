@@ -1,6 +1,16 @@
 <template>
   <div class="activity-viewer">
-    <button class="arrow-button left" @click="goToPrevActivity">&#8592;</button>
+    <!-- 导航栏 -->
+    <div class="sidebar-wrapper" @mouseover="showSidebar = true" @mouseleave="showSidebar = false">
+        <div class="sidebar" v-show="showSidebar">
+          <div class="sidebar-item" @click="goTo('/activity')">活动日历</div>
+          <div class="sidebar-item" @click="goTo('/resource')">资源分享</div>
+          <div class="sidebar-item" @click="goTo('/virtual')">虚拟空间</div>
+          <div class="sidebar-item" @click="goTo('/help')">紧急求助</div>
+          <div class="sidebar-item" @click="goTo('/success')">首页</div>
+        </div>
+      </div>
+    <button v-if="currentActivities.length > 0" class="arrow-button left" @click="goToPrevActivity">&#8592;</button>
   <input class="search-box" v-model="searchQuery" placeholder="🔍 搜索"/>
     <div class="activity-container">
       <div class="activity-block" v-for="(activity, index) in currentActivities" :key="index">
@@ -17,7 +27,7 @@
       </div>
     </div>
 
-    <button class="arrow-button right" @click="goToNextActivity">&#8594;</button>
+    <button v-if="currentActivities.length > 0" class="arrow-button right" @click="goToNextActivity">&#8594;</button>
   </div>
 </template>
 
@@ -32,12 +42,16 @@ const itemsPerPage = 3;
 const searchQuery = ref('');
 
 const currentActivities = computed(() => {
-  if (searchQuery.value.trim()) {
-    return activities.value.filter(act =>
-      act.name && act.name.includes(searchQuery.value)
-    );
-  }
-  return activities.value.slice(currentIndex.value, currentIndex.value + itemsPerPage);
+  const keyword = searchQuery.value.trim().toLowerCase();
+  const filtered = keyword
+    ? activities.value.filter(act =>
+        (act.name && act.name.toLowerCase().includes(keyword)) ||
+        (act.editor && act.editor.toLowerCase().includes(keyword)) ||
+        (act.introduction && act.introduction.toLowerCase().includes(keyword))
+      )
+    : activities.value;
+
+  return filtered.slice(currentIndex.value, currentIndex.value + itemsPerPage);
 });
 
 const goToPrevActivity = () => {
@@ -60,14 +74,35 @@ onMounted(async () => {
     console.error("Failed to fetch activities:", error);
   }
 });
+
+const showSidebar = ref(false);
+
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const goTo = (path) => {
+  router.push(path)
+}
 </script>
   
 <style scoped>
 .activity-viewer {
   display: flex;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   gap: 1rem;
+  min-height: 100vh;
+  width: 86vw;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+
+  background-image: url('images/activity.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  color: #fff; 
+  backdrop-filter: brightness(0.9)
 }
 
 .arrow-button {
@@ -144,8 +179,8 @@ onMounted(async () => {
     width:20vw;
     left: 61vw;
     top: 15vh;
-    color: #fff;
-    /* color:black; */
+    /* color: #fff; */
+    color:black;
     background-color: #f4f4f4;
     padding: 8px 16px;
     border-radius: 7px;
@@ -154,7 +189,9 @@ onMounted(async () => {
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 2px solid transparent; /* 初始无边框 */
+    border: 2px solid transparent; 
+    outline: none;
+    /* 初始无边框 */
   }
 .overlay-activity {
   position: fixed;
@@ -166,5 +203,44 @@ onMounted(async () => {
   padding: 1rem;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.sidebar-wrapper {
+  /* background-color: white; */
+  position: fixed;
+  top: 0vh;
+  left: 0;
+  width: 40px;
+  height: 30vh;
+  z-index: 999;
+}
+
+.sidebar {
+  background-color: rgba(0, 0, 0, 0.8);
+  /* background-color: white; */
+  color: white;
+  width: 140px;
+  height: 30vh;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.sidebar-item {
+  padding: 8px;
+  margin-bottom: 6px;
+  background-color: #333;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.sidebar-item:hover {
+  background-color: #555;
 }
 </style>

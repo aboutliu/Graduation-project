@@ -6,6 +6,9 @@ import test from '@/test.vue';
 import activity from '@/activity.vue';  
 import resource from '@/resource.vue';  
 import person from '@/person.vue';  
+import personalactivity from '@/personalactivity.vue';  
+import personalresource from '@/personalresource.vue';  
+import help from '@/help.vue';  
 
 const routes = [
   {
@@ -46,6 +49,21 @@ const routes = [
     path: '/person',
     name: 'person',
     component: person
+  },
+  {
+    path: '/personalactivity',
+    name: 'personalactivity',
+    component: personalactivity
+  },
+  {
+    path: '/personalresource',
+    name: 'personalresource',
+    component: personalresource
+  },
+  {
+    path: '/help',
+    name: 'help',
+    component: help
   },
 ];
 

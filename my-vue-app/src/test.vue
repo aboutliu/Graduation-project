@@ -1,71 +1,126 @@
 <template>
-  <div class="TestContainer">
-    <div class="Test" v-for="activity in activities" :key="activity.id">
-      <div>
-        <p><strong>名称:</strong> {{ activity.name }}</p>
-        <p><strong>简介:</strong> {{ activity.introduction }}</p>
-        <p><strong>时间:</strong> {{ activity.time }}</p>
-        <p><strong>其他:</strong> {{ activity.others }}</p>
-      </div>
-    </div>
-  </div>
+  <div class="map-container" ref="map"></div>
+  <button class="locate-btn" @click="locateMe">定位我</button>
 </template>
 
 <script>
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
 export default {
+  name: 'MapView',
   data() {
     return {
-      activities: []
+      map: null,
+      userMarker: null,
     };
   },
   mounted() {
-    fetch("http://localhost:8080/activities") // 确保这里的 API 地址正确
-      .then(response => response.json())
-      .then(data => {
-        this.activities = data;
-      })
-      .catch(error => console.error("Error fetching activities:", error));
-  }
+    this.initMap();
+  },
+  methods: {
+    initMap() {
+      const defaultCoords = [30.8201, 106.6089]; // fallback: school location
+      this.map = L.map(this.$refs.map);
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            this.map.setView([lat, lng], 18);
+            if (this.userMarker) {
+              this.userMarker.setLatLng([lat, lng]).openPopup();
+            } else {
+              this.userMarker = L.circleMarker([lat, lng], {
+                radius: 6,
+                color: 'blue',
+                fillColor: 'blue',
+                fillOpacity: 0.8
+              }).addTo(this.map).bindPopup('我在这里').openPopup();
+            }
+          },
+          (error) => {
+            console.warn('Geolocation failed, using default.', error);
+            this.map.setView(defaultCoords, 18);
+            if (this.userMarker) {
+              this.userMarker.setLatLng(defaultCoords).openPopup();
+            } else {
+              this.userMarker = L.circleMarker(defaultCoords, {
+                radius: 6,
+                color: 'blue',
+                fillColor: 'blue',
+                fillOpacity: 0.8
+              }).addTo(this.map).bindPopup('我在这里').openPopup();
+            }
+          }
+        );
+      } else {
+        console.warn('Geolocation not supported, using default.');
+        this.map.setView(defaultCoords, 18);
+        if (this.userMarker) {
+          this.userMarker.setLatLng(defaultCoords).openPopup();
+        } else {
+          this.userMarker = L.circleMarker(defaultCoords, {
+            radius: 6,
+            color: 'blue',
+            fillColor: 'blue',
+            fillOpacity: 0.8
+          }).addTo(this.map).bindPopup('我在这里').openPopup();
+        }
+      }
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
+    },
+    locateMe() {
+      if (this.map && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            this.map.setView([lat, lng], 18);
+            if (this.userMarker) {
+              this.userMarker.setLatLng([lat, lng]).openPopup();
+            } else {
+              this.userMarker = L.circleMarker([lat, lng], {
+                radius: 6,
+                color: 'blue',
+                fillColor: 'blue',
+                fillOpacity: 0.8
+              }).addTo(this.map).bindPopup('我在这里').openPopup();
+            }
+          },
+          (error) => {
+            console.warn('Geolocation failed:', error);
+          }
+        );
+      }
+    },
+  },
 };
 </script>
 
-<style>
-body, html {
+<style scoped>
+.map-container {
+  height: 778px;
+  width: 837px;
+}
+
+.locate-btn {
+  position: absolute;
+  top: 10px;
+  left: 160px;
+  z-index: 1000;
+  padding: 8px 12px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+html, body {
   margin: 0;
   padding: 0;
-}
-
-.TestContainer {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 50px;
-  width: 85vw;
-  position: fixed;
-  left: 10vw;
-  top: 20vh;
-  height: calc(100vh - 20vh);
-  overflow-y: auto;
-  /* background-color: black; */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-}
-
-.TestContainer::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
-}
-
-.Test {
-    height: 20vh;
-    width: 17vw;
-    background-color: #C6E2FF;
-    border-radius: 20px;
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-* {
-  box-sizing: border-box;
+  height: 100%;
 }
 </style>

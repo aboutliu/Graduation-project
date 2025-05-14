@@ -1,15 +1,16 @@
-package org.example.springbootdemo.activity.config;
+package org.example.springbootdemo.resource.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
-public class WebConfig implements WebMvcConfigurer {
+//@Configuration
+@Configuration("resourceWebConfig")
+public class ResourceWebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 映射 /uploads/** 到后端项目根目录的 uploads 文件夹
+        // 映射 /uploads/** 到后端项目根目录的 images 文件夹
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("file:images/");
     }
