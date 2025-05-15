@@ -1,10 +1,12 @@
 <template>
     <div class="home-container">
-      <div v-if="notification.visible" class="notification-box">
-        {{ notification.message }}
-        <button class="close-btn" @click="notification.visible = false">×</button>
-      </div>
-      <div class="sidebar-wrapper" @mouseover="showSidebar = true" @mouseleave="showSidebar = false">
+        <!-- 提示框 -->
+        <div v-if="notification.visible" class="notification-box">
+            {{ notification.message }}
+            <button class="close-btn" @click="notification.visible = false">×</button>
+        </div>
+        <!-- 导航栏 -->
+        <div class="sidebar-wrapper" @mouseover="showSidebar = true" @mouseleave="showSidebar = false">
         <div class="sidebar" v-show="showSidebar">
           <div class="sidebar-item" @click="goTo('/activity')">活动日历</div>
           <div class="sidebar-item" @click="goTo('/resource')">资源分享</div>
@@ -15,47 +17,56 @@
       </div>
   
       <div class="resource-box" @click="goTo('/personalresource')">我的资源</div>
+      <div class="share-box" @click="goTo('/personalactivity')">我的活动</div>
       <div class="help-box" @click="goTo('/personalhelp')">我的求助</div>
-      <div class="share-box">我的活动</div>
-      <div class="talk-box" @click="goTo('/personalvirtual')">我的偶像</div>
+      <div class="talk-box">我的偶像</div>
       <div class="add-box" @click="showAddForm ? closeAddForm() : (showAddForm = true)">{{ showAddForm ? '关闭' : '添加' }}</div>
-    
-      <div class="activity-viewer">
-            <button v-if="currentActivities.length > 0" class="arrow-button left" @click="goToPrevActivity">&#8592;</button>
+      <!-- <div class="share-box" @click="goTo('/resource')">资源分享</div>
+      <div class="resource-box" @click="goTo('/resource')">活动日历</div> -->
+      <div class="resource-viewer">
+            <button v-if="currentresources.length > 0" class="arrow-button left" @click="goToPrevresource">&#8592;</button>
             <input class="search-box" v-model="searchQuery" placeholder="🔍 搜索"/>
-            <div class="activity-container">
-                <div class="activity-block" v-for="(activity, index) in currentActivities" :key="index">
-                    <button class="delete-button" @click="deleteActivity(activity.id)">×</button>
-                    <div class="activity-info">
-                        <div class="activity-image">
-                            <img :src="'http://localhost:8080' + '/images/' + (activity.image || 'activity.png')" alt="活动图片" />
+            <div class="resource-container">
+                <div class="resource-block" v-for="(resource, index) in currentresources" :key="index">
+                    <button class="delete-button" @click="deleteresource(resource.id)">×</button>
+                    <div class="resource-info">
+                        <div class="resource-image">
+                            <img :src="'http://localhost:8080' + '/images/' + (resource.image || 'virtual.png')" alt="活动图片" />
                         </div>
-                        <p><strong>名称：</strong>{{ activity.name }}</p>
-                        <p><strong>日期：</strong>{{ activity.time }}</p>
-                        <p><strong>地点：</strong>{{ activity.place }}</p>
-                        <p><strong>编辑人：</strong>{{ activity.editor }}</p>
-                        <p><strong>说明：</strong>{{ activity.introduction }}</p>
+                        <p><strong>名称：</strong>{{ resource.name }}</p>
+                        <p><strong>年龄：</strong>{{ resource.age }}</p>
+                        <p><strong>发布日期：</strong>{{ resource.time }}</p>
+                        <p><strong>编辑人：</strong>{{ resource.editor }}</p>
+                        <p><strong>说明：</strong>{{ resource.introduction }}</p>
+                    </div>
+                    <div class="resource-votes">
+                      <div class="vote-button up" @click="voteUp(resource)">
+                        👍 {{ resource.up }}
+                      </div>
+                      <div class="vote-button down" @click="voteDown(resource)">
+                        👎 {{ resource.down }}
+                      </div>
                     </div>
                 </div>
             </div>
-            <button v-if="currentActivities.length > 0" class="arrow-button right" @click="goToNextActivity">&#8594;</button>
+            <button v-if="currentresources.length > 0" class="arrow-button right" @click="goToNextresource">&#8594;</button>
       </div>
 
       <div v-if="showAddForm">
-        <div v-if="showAddForm" class="activity-container" style="z-index: 999;">
-  <div class="new-add-activity-block">
+        <div v-if="showAddForm" class="resource-container" style="z-index: 999;">
+  <div class="new-add-resource-block">
     <button class="upload-image" @click="imageInput.click()">上传图片</button>
     <input type="file" ref="imageInput" style="display:none" @change="handleImageUpload" />
-    <div class="activity-info">
-      <div class="activity-image">
-        <img :src="'http://localhost:8080/images/' + (newActivity.image || 'activity.png')" alt="上传图片" />
+    <div class="resource-info">
+      <div class="resource-image">
+        <img :src="'http://localhost:8080/images/' + (newresource.image || 'virtual.png')" alt="上传图片" />
       </div>
-      <input v-model="newActivity.name" placeholder="名称" />
-      <input v-model="newActivity.time" placeholder="时间" />
-      <input v-model="newActivity.place" placeholder="地点" />
-      <input v-model="newActivity.editor" placeholder="编辑人" />
-      <textarea v-model="newActivity.introduction" placeholder="说明"></textarea>
-      <button @click="addActivity">添加</button>
+      <input v-model="newresource.name" placeholder="名称" />
+      <input v-model="newresource.time" placeholder="时间" />
+      <input v-model="newresource.age" placeholder="年龄" />
+      <input v-model="newresource.editor" placeholder="编辑人" />
+      <textarea v-model="newresource.introduction" placeholder="说明"></textarea>
+      <button @click="addresource">添加</button>
     </div>
   </div>
 </div>
@@ -69,7 +80,6 @@
   </template>
   
   <script setup>
-const showSidebar = ref(false);
 
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
@@ -85,18 +95,20 @@ const showNotification = (msg) => {
   }, 3000); // 自动关闭
 };
 
-const showActivities = ref(false);
+
+const showSidebar = ref(false);
+const showresources = ref(false);
 const showAddForm = ref(false);
 
-const activities = ref([]);
+const resources = ref([]);
 const currentIndex = ref(0);
 const itemsPerPage = 3;
 
 const searchQuery = ref('');
 const userId = localStorage.getItem('userId') || '未登录';
 
-const currentActivities = computed(() => {
-  const filtered = activities.value.filter(
+const currentresources = computed(() => {
+  const filtered = resources.value.filter(
     act => act.idname && act.idname.includes(userId)
   );
 
@@ -111,14 +123,14 @@ const currentActivities = computed(() => {
   return searched.slice(currentIndex.value, currentIndex.value + itemsPerPage);
 });
 
-const goToPrevActivity = () => {
+const goToPrevresource = () => {
   if (currentIndex.value > 0) {
     currentIndex.value -= itemsPerPage;
   }
 };
 
-const goToNextActivity = () => {
-  const filtered = activities.value.filter(
+const goToNextresource = () => {
+  const filtered = resources.value.filter(
     act => act.idname && act.idname.includes(userId)
   );
   if (currentIndex.value + itemsPerPage < filtered.length) {
@@ -126,26 +138,26 @@ const goToNextActivity = () => {
   }
 };
 
-const deleteActivity = async (id) => {
+const deleteresource = async (id) => {
   try {
     // 找到对应活动
-    const activity = activities.value.find(act => act.id === id);
-    if (!activity) return;
+    const resource = resources.value.find(act => act.id === id);
+    if (!resource) return;
 
     // 先删除活动
-    await axios.delete(`http://localhost:8080/activities/${id}`);
+    await axios.delete(`http://localhost:8080/virtual/${id}`);
 
     // 如果该活动有图片，发请求删除图片
-    if (activity.image) {
-      await axios.delete(`http://localhost:8080/deleteImage/${activity.image}`);
+    if (resource.image) {
+      await axios.delete(`http://localhost:8080/deleteImage/${resource.image}`);
     }
 
     // 重新拉取活动列表，刷新视图
-const response = await axios.get("http://localhost:8080/activities");
-activities.value = response.data;
+const response = await axios.get("http://localhost:8080/virtual");
+resources.value = response.data;
 
 // 获取筛选后的活动总数
-const filtered = activities.value.filter(
+const filtered = resources.value.filter(
   act => act.idname && act.idname.includes(userId)
 );
 
@@ -154,16 +166,16 @@ if (currentIndex.value >= filtered.length && currentIndex.value > 0) {
   currentIndex.value = Math.max(currentIndex.value - itemsPerPage, 0);
 }
   } catch (error) {
-    console.error("Failed to delete activity or image:", error);
+    console.error("Failed to delete resource or image:", error);
   }
 };
 
 onMounted(async () => {
   try {
-    const response = await axios.get("http://localhost:8080/activities");
-    activities.value = response.data;
+    const response = await axios.get("http://localhost:8080/virtual");
+    resources.value = response.data;
   } catch (error) {
-    console.error("Failed to fetch activities:", error);
+    console.error("Failed to fetch resources:", error);
   }
 });
 
@@ -175,13 +187,15 @@ const goTo = (path) => {
 }
 
 // 新增活动相关
-const newActivity = ref({
+const newresource = ref({
   name: '',
   time: '',
-  place: '',
+  age: '',
   editor: '',
   introduction: '',
   image: '',
+  up: 0,
+  down: 0,
 });
 
 const imageInput = ref(null);
@@ -189,68 +203,97 @@ let uploadedImageName = '';
 
 const handleImageUpload = async (e) => {
   const file = e.target.files[0];
+//   alert('in');
   if (!file) return;
 
   const formData = new FormData();
-  const filename = userId + newActivity.value.name + '.' + file.name.split('.').pop();
-  showNotification(newActivity.value.name);
+  const filename = userId + newresource.value.name + '.' + file.name.split('.').pop();
+//   alert(newresource.value.name);
   formData.append('file', file, filename);
   
   try {
-    await axios.post('http://localhost:8080/activity/uploadImage', formData);
-    showNotification('上传中...');
+    await axios.post('http://localhost:8080/virtual/uploadImage', formData);
+    // alert('try');
     uploadedImageName = filename;
+    // alert('上传成功');
     showNotification('上传成功');
   } catch (error) {
     console.error('上传失败', error);
+    // alert('上传失败');
     showNotification('上传失败');
   }
 };
 
-const addActivity = async () => {
-  const { name, time, place, editor, introduction } = newActivity.value;
-  if (!name || !time || !place || !editor || !introduction) {
+const addresource = async () => {
+  const { name, time, age, editor, introduction, up, down } = newresource.value;
+  if (!name || !time || !age || !editor || !introduction) {
+    // alert('请填写所有必填字段');
     showNotification('请填写所有必填字段');
     return;
   }
 
-  const activityToAdd = {
+  const resourceToAdd = {
     name,
     time,
-    place,
+    age,
     editor,
     introduction,
     image: uploadedImageName || '',
     idname: userId + name,
+    up,
+    down,
   };
 
   try {
-    await axios.post('http://localhost:8080/activities', activityToAdd);
+    await axios.post('http://localhost:8080/virtual', resourceToAdd);
 
     // 添加成功后重新拉取活动列表（这样才有 id）
-    const response = await axios.get("http://localhost:8080/activities");
-    activities.value = response.data;
+    const response = await axios.get("http://localhost:8080/virtual");
+    resources.value = response.data;
+    // alert('添加成功');
     showNotification('添加成功');
-    Object.assign(newActivity.value, {
-      name: '', time: '', place: '', editor: '', introduction: '', image: ''
+    Object.assign(newresource.value, {
+      name: '', time: '', age: '', editor: '', introduction: '', image: ''
     });
     uploadedImageName = '';
   } catch (error) {
-    Object.assign(newActivity.value, {
-      name: '', time: '', place: '', editor: '', introduction: '', image: ''
+    Object.assign(newresource.value, {
+      name: '', time: '', age: '', editor: '', introduction: '', image: ''
     });
     uploadedImageName = '';
     console.error('添加失败', error);
+    // alert('添加失败');
     showNotification('添加失败');
   }
 };
 
 const closeAddForm = () => {
   showAddForm.value = false;
-  Object.assign(newActivity.value, {
-    name: '', time: '', place: '', editor: '', introduction: '', image: ''
+  Object.assign(newresource.value, {
+    name: '', time: '', editor: '', age: '', introduction: '', image: ''
   });
   uploadedImageName = '';
+};
+
+// 点赞/点踩方法
+const voteUp = async (resource) => {
+  resource.up += 1;
+  try {
+    await axios.put(`http://localhost:8080/virtual/upvote/${resource.id}`, resource);
+  } catch (error) {
+    console.error('点赞失败', error);
+    showNotification('点赞失败');
+  }
+};
+
+const voteDown = async (resource) => {
+  resource.down += 1;
+  try {
+    await axios.put(`http://localhost:8080/virtual/downvote/${resource.id}`, resource);
+  } catch (error) {
+    console.error('点踩失败', error);
+    showNotification('点踩失败');
+  }
 };
 
 </script>
@@ -362,26 +405,6 @@ const closeAddForm = () => {
     border: 2px solid #fff; /* 显示白色边框 */
     color: #fff; /* 字体保持白色 */
   }
-  .activity-box {
-    position: fixed;
-    left: 51vw;
-    top: 5vh;
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 7px;
-    display: inline-block;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid transparent; /* 初始无边框 */
-  }
-  .activity-box:hover {
-    transform: translateY(-2px);
-    background-color: transparent; /* hover时背景透明 */
-    border: 2px solid #fff; /* 显示白色边框 */
-    color: #fff; /* 字体保持白色 */
-  }
   .welcome-text {
     position: fixed;
     left: 5vw;
@@ -410,7 +433,7 @@ const closeAddForm = () => {
   height: 100%;
   object-fit: cover;
 }
-.activity-viewer {
+.resource-viewer {
     position: fixed;
     top: 22vh;
   display: flex;
@@ -446,7 +469,7 @@ const closeAddForm = () => {
   overflow-x: auto;
 }
 
-.activity-container {
+.resource-container {
   height: 60vh;
   display: flex;
   flex-direction: row;
@@ -455,7 +478,7 @@ const closeAddForm = () => {
   padding: 2rem;
 }
  
-.activity-block {
+.resource-block {
     width: 10vw;
   display: flex;
   justify-content: space-between;
@@ -467,23 +490,23 @@ const closeAddForm = () => {
   min-width: 300px;
   position: relative;
 }
-.activity-block:hover {
+.resource-block:hover {
     transform: translateY(-10px);
 }
 
-.activity-info {
+.resource-info {
   font-size: 16px;
   color: #333;
 }
 
-.activity-image {
+.resource-image {
   width: 250px;
   display: flex;
   justify-content: center;
   margin-bottom: 1rem;
 }
 
-.activity-image img {
+.resource-image img {
   width: 250px; /* or your desired width */
   height: 200px; /* or your desired height */
   border-radius: 8px;
@@ -491,10 +514,11 @@ const closeAddForm = () => {
 }
 .search-box {
     position: fixed;
-    width: 20vw;
+    width:20vw;
     left: 61vw;
     top: 15vh;
-    color: black;
+    /* color: #fff; */
+    color:black;
     background-color: #f4f4f4;
     padding: 8px 16px;
     border-radius: 7px;
@@ -503,9 +527,10 @@ const closeAddForm = () => {
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 2px solid transparent;
+    border: 2px solid transparent; 
     outline: none;
-}
+    /* 初始无边框 */
+  }
 .overlay-backdrop {
   position: fixed;
   top: 0;
@@ -516,7 +541,7 @@ const closeAddForm = () => {
   z-index: 998;
 }
 
-.add-activity-form {
+.add-resource-form {
   position: fixed;
   top: 20vh;
   left: 50vw;
@@ -539,8 +564,8 @@ const closeAddForm = () => {
 .delete-button:hover {
   color: red;
 }
-  .new-activity-block input,
-  .new-activity-block textarea {
+  .new-resource-block input,
+  .new-resource-block textarea {
     width: 100%;
     margin: 4px 0;
     padding: 6px;
@@ -548,7 +573,7 @@ const closeAddForm = () => {
     border: 1px solid #ccc;
   }
 
-  .new-activity-block button {
+  .new-resource-block button {
     margin-top: 10px;
     background-color: #007bff;
     color: white;
@@ -558,7 +583,7 @@ const closeAddForm = () => {
     cursor: pointer;
   }
 
-  .new-activity-block button:hover {
+  .new-resource-block button:hover {
     background-color: #0056b3;
   }
   .upload-image {
@@ -571,7 +596,7 @@ const closeAddForm = () => {
     font-size: 14px;
     cursor: pointer;
   }
-  .new-add-activity-block {
+  .new-add-resource-block {
 
     width: 10vw;
   display: flex;
@@ -642,7 +667,8 @@ const closeAddForm = () => {
 .sidebar-item:hover {
   background-color: #555;
 }
-  .notification-box {
+
+.notification-box {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -664,5 +690,30 @@ const closeAddForm = () => {
     margin-left: 12px;
     cursor: pointer;
   }
-  </style>
+  .resource-votes {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
 
+  .vote-button {
+    background-color: #eee;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+  }
+
+  .vote-button.up {
+    color: green;
+  }
+
+  .vote-button.down {
+    color: red;
+  }
+  </style>

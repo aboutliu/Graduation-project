@@ -1,5 +1,10 @@
 <template>
     <div class="home-container">
+        <!-- 提示框 -->
+        <div v-if="notification.visible" class="notification-box">
+            {{ notification.message }}
+            <button class="close-btn" @click="notification.visible = false">×</button>
+        </div>
         <!-- 导航栏 -->
         <div class="sidebar-wrapper" @mouseover="showSidebar = true" @mouseleave="showSidebar = false">
         <div class="sidebar" v-show="showSidebar">
@@ -11,9 +16,11 @@
         </div>
       </div>
   
-      <div class="help-box" >我的资源</div>
-      <div class="talk-box" @click="goTo('/personalactivity')">我的活动</div>
-      <div class="add-box" @click="showAddForm = !showAddForm">{{ showAddForm ? '关闭' : '添加' }}</div>
+      <div class="resource-box" >我的资源</div>
+      <div class="share-box" @click="goTo('/personalactivity')">我的活动</div>
+      <div class="help-box" @click="goTo('/personalhelp')">我的求助</div>
+      <div class="talk-box" @click="goTo('/personalvirtual')">我的偶像</div>
+      <div class="add-box" @click="showAddForm ? closeAddForm() : (showAddForm = true)">{{ showAddForm ? '关闭' : '添加' }}</div>
       <!-- <div class="share-box" @click="goTo('/resource')">资源分享</div>
       <div class="resource-box" @click="goTo('/resource')">活动日历</div> -->
       <div class="resource-viewer">
@@ -68,6 +75,18 @@
 
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
+
+// Notification ref and function
+const notification = ref({ message: '', visible: false });
+
+const showNotification = (msg) => {
+  notification.value.message = msg;
+  notification.value.visible = true;
+  setTimeout(() => {
+    notification.value.visible = false;
+  }, 3000); // 自动关闭
+};
+
 
 const showSidebar = ref(false);
 const showresources = ref(false);
@@ -179,24 +198,27 @@ const handleImageUpload = async (e) => {
 
   const formData = new FormData();
   const filename = userId + newresource.value.name + '.' + file.name.split('.').pop();
-  alert(newresource.value.name);
+//   alert(newresource.value.name);
   formData.append('file', file, filename);
   
   try {
     await axios.post('http://localhost:8080/resource/uploadImage', formData);
-    alert('try');
+    // alert('try');
     uploadedImageName = filename;
-    alert('上传成功');
+    // alert('上传成功');
+    showNotification('上传成功');
   } catch (error) {
     console.error('上传失败', error);
-    alert('上传失败');
+    // alert('上传失败');
+    showNotification('上传失败');
   }
 };
 
 const addresource = async () => {
   const { name, time, category, editor, introduction } = newresource.value;
   if (!name || !time || !category || !editor || !introduction) {
-    alert('请填写所有必填字段');
+    // alert('请填写所有必填字段');
+    showNotification('请填写所有必填字段');
     return;
   }
 
@@ -216,7 +238,8 @@ const addresource = async () => {
     // 添加成功后重新拉取活动列表（这样才有 id）
     const response = await axios.get("http://localhost:8080/resources");
     resources.value = response.data;
-    alert('添加成功');
+    // alert('添加成功');
+    showNotification('添加成功');
     Object.assign(newresource.value, {
       name: '', time: '', category: '', editor: '', introduction: '', image: ''
     });
@@ -227,12 +250,17 @@ const addresource = async () => {
     });
     uploadedImageName = '';
     console.error('添加失败', error);
-    alert('添加失败');
+    // alert('添加失败');
+    showNotification('添加失败');
   }
 };
 
 const closeAddForm = () => {
   showAddForm.value = false;
+  Object.assign(newresource.value, {
+    name: '', time: '', editor: '', category: '', introduction: '', image: ''
+  });
+  uploadedImageName = '';
 };
 
 </script>
@@ -264,9 +292,29 @@ const closeAddForm = () => {
     margin-bottom: 2rem;
   }
   
-  .help-box {
+  .resource-box {
     position: fixed;
     left: 72vw;
+    top: 5vh;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 7px;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent; /* 初始无边框 */
+  }
+  .resource-box:hover {
+    transform: translateY(-2px);
+    background-color: transparent; /* hover时背景透明 */
+    border: 2px solid #fff; /* 显示白色边框 */
+    color: #fff; /* 字体保持白色 */
+  }
+  .help-box {
+    position: fixed;
+    left: 58vw;
     top: 5vh;
     color: #fff;
     padding: 8px 16px;
@@ -284,29 +332,9 @@ const closeAddForm = () => {
     border: 2px solid #fff; /* 显示白色边框 */
     color: #fff; /* 字体保持白色 */
   }
-  .talk-box {
-    position: fixed;
-    left: 65vw;
-    top: 5vh;
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 7px;
-    display: inline-block;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid transparent; /* 初始无边框 */
-  }
-  .talk-box:hover {
-    transform: translateY(-2px);
-    background-color: transparent; /* hover时背景透明 */
-    border: 2px solid #fff; /* 显示白色边框 */
-    color: #fff; /* 字体保持白色 */
-  }
   .share-box {
     position: fixed;
-    left: 58vw;
+    left: 65vw;
     top: 5vh;
     color: #fff;
     padding: 8px 16px;
@@ -324,7 +352,7 @@ const closeAddForm = () => {
     border: 2px solid #fff; /* 显示白色边框 */
     color: #fff; /* 字体保持白色 */
   }
-  .resource-box {
+  .talk-box {
     position: fixed;
     left: 51vw;
     top: 5vh;
@@ -338,7 +366,7 @@ const closeAddForm = () => {
     transition: all 0.3s ease;
     border: 2px solid transparent; /* 初始无边框 */
   }
-  .resource-box:hover {
+  .talk-box:hover {
     transform: translateY(-2px);
     background-color: transparent; /* hover时背景透明 */
     border: 2px solid #fff; /* 显示白色边框 */
@@ -606,4 +634,27 @@ const closeAddForm = () => {
 .sidebar-item:hover {
   background-color: #555;
 }
+
+.notification-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #323232;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 6px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    font-size: 14px;
+    z-index: 1000;
+  }
+
+  .notification-box .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    margin-left: 12px;
+    cursor: pointer;
+  }
   </style>

@@ -8,7 +8,10 @@ import resource from '@/resource.vue';
 import person from '@/person.vue';  
 import personalactivity from '@/personalactivity.vue';  
 import personalresource from '@/personalresource.vue';  
+import personalhelp from '@/personalhelp.vue';  
+import personalvirtual from '@/personalvirtual.vue';  
 import help from '@/help.vue';  
+import virtual from '@/virtual.vue';  
 
 const routes = [
   {
@@ -61,9 +64,24 @@ const routes = [
     component: personalresource
   },
   {
+    path: '/personalhelp',
+    name: 'personalhelp',
+    component: personalhelp
+  },
+  {
+    path: '/personalvirtual',
+    name: 'personalvirtual',
+    component: personalvirtual
+  },
+  {
     path: '/help',
     name: 'help',
     component: help
+  },
+  {
+    path: '/virtual',
+    name: 'virtual',
+    component: virtual
   },
 ];
 

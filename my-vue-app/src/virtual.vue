@@ -15,11 +15,11 @@
         <div class="Resource-block" v-for="(Resource, index) in currentresources" :key="index">
           <div class="Resource-info">
               <div class="Resource-image">
-                  <img :src="'http://localhost:8080' + '/images/' + (Resource.image || 'Resource.png')" alt="活动图片" />
+                  <img :src="'http://localhost:8080' + '/images/' + (Resource.image || 'virtual.png')" alt="活动图片" />
               </div>
             <p><strong>名称：</strong>{{ Resource.name }}</p>
             <p><strong>日期：</strong>{{ Resource.time }}</p>
-            <p><strong>地点：</strong>{{ Resource.place }}</p>
+            <p><strong>地点：</strong>{{ Resource.age }}</p>
             <p><strong>编辑人：</strong>{{ Resource.editor }}</p>
             <p><strong>说明：</strong>{{ Resource.introduction }}</p>
           </div>
@@ -40,15 +40,6 @@
   
   const searchQuery = ref('');
   
-  // const currentresources = computed(() => {
-  //   if (searchQuery.value.trim()) {
-  //     return resources.value.filter(act =>
-  //       act.name && act.name.includes(searchQuery.value)
-  //     );
-  //   }
-  //   return resources.value.slice(currentIndex.value, currentIndex.value + itemsPerPage);
-  // });
-
   const currentresources = computed(() => {
   const keyword = searchQuery.value.trim().toLowerCase();
   const filtered = keyword
@@ -76,7 +67,7 @@
   
   onMounted(async () => {
     try {
-      const response = await axios.get("http://localhost:8080/resources");
+      const response = await axios.get("http://localhost:8080/virtual");
       resources.value = response.data;
     } catch (error) {
       console.error("Failed to fetch resources:", error);
@@ -104,7 +95,7 @@
     padding: 2rem;
     font-family: Arial, sans-serif;
 
-    background-image: url('images/resource.png');
+    background-image: url('images/virtual.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
