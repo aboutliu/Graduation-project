@@ -3,7 +3,7 @@
       <h2 class="welcome-text">Welcome to Community Service Platform</h2>
   
       <div class="help-box" @click="goTo('/help')">紧急求助</div>
-      <div class="talk-box" @click="goTo('/virtual')">虚拟空间</div>
+      <div class="talk-box" @click="goTo('/virtual')">社区榜样</div>
       <div class="share-box" @click="goTo('/resource')">资源分享</div>
       <div class="activity-box" @click="goTo('/activity')">活动日历</div>
     </div>

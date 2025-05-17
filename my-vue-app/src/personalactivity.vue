@@ -8,7 +8,7 @@
         <div class="sidebar" v-show="showSidebar">
           <div class="sidebar-item" @click="goTo('/activity')">活动日历</div>
           <div class="sidebar-item" @click="goTo('/resource')">资源分享</div>
-          <div class="sidebar-item" @click="goTo('/virtual')">虚拟空间</div>
+          <div class="sidebar-item" @click="goTo('/virtual')">社区榜样</div>
           <div class="sidebar-item" @click="goTo('/help')">紧急求助</div>
           <div class="sidebar-item" @click="goTo('/success')">首页</div>
         </div>
@@ -137,7 +137,8 @@ const deleteActivity = async (id) => {
 
     // 如果该活动有图片，发请求删除图片
     if (activity.image) {
-      await axios.delete(`http://localhost:8080/deleteImage/${activity.image}`);
+      // alert(activity.image);
+      await axios.delete(`http://localhost:8080/activity/deleteImage/${activity.image}`);
     }
 
     // 重新拉取活动列表，刷新视图

@@ -5,7 +5,7 @@
         <div class="sidebar" v-show="showSidebar">
           <div class="sidebar-item" @click="goTo('/activity')">活动日历</div>
           <div class="sidebar-item" @click="goTo('/resource')">资源分享</div>
-          <div class="sidebar-item" @click="goTo('/virtual')">虚拟空间</div>
+          <div class="sidebar-item" @click="goTo('/virtual')">社区榜样</div>
           <div class="sidebar-item" @click="goTo('/help')">紧急求助</div>
           <div class="sidebar-item" @click="goTo('/success')">首页</div>
         </div>

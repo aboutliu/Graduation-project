@@ -29,7 +29,7 @@ public class HelpController {
         return helpService.getHelpById(id);
     }
 
-    // 添加新活动
+    // 添加新求助
     @PostMapping
     public Help createhelp(@RequestBody Help help) {
         return helpService.createHelp(help);

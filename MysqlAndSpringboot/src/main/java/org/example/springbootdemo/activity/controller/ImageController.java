@@ -50,8 +50,10 @@ public class ImageController {
         File file = new File(filePath);
         System.out.println(filePath);
         if (file.exists() && file.delete()) {
+            System.out.println("图片删除成功");
             return ResponseEntity.ok("图片已删除");
         } else {
+            System.out.println("图片删除失败");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("找不到图片");
         }
     }

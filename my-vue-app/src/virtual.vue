@@ -4,7 +4,7 @@
         <div class="sidebar" v-show="showSidebar">
           <div class="sidebar-item" @click="goTo('/activity')">活动日历</div>
           <div class="sidebar-item" @click="goTo('/resource')">资源分享</div>
-          <div class="sidebar-item" @click="goTo('/virtual')">虚拟空间</div>
+          <div class="sidebar-item" @click="goTo('/virtual')">社区榜样</div>
           <div class="sidebar-item" @click="goTo('/help')">紧急求助</div>
           <div class="sidebar-item" @click="goTo('/success')">首页</div>
         </div>
@@ -23,6 +23,14 @@
             <p><strong>编辑人：</strong>{{ Resource.editor }}</p>
             <p><strong>说明：</strong>{{ Resource.introduction }}</p>
           </div>
+          <div class="resource-votes">
+              <div class="vote-button up" @click="voteUp(Resource)">
+                👍 {{ Resource.up }}
+              </div>
+              <div class="vote-button down" @click="voteDown(Resource)">
+                👎 {{ Resource.down }}
+              </div>
+            </div>
         </div>
       </div>
   
@@ -82,6 +90,26 @@
   const goTo = (path) => {
     router.push(path)
   }
+
+  // 点赞/点踩方法
+const voteUp = async (resources) => {
+  resources.up += 1;
+  try {
+    await axios.put(`http://localhost:8080/virtual/upvote/${resources.id}`, resources);
+  } catch (error) {
+    console.error('点赞失败', error);
+    showNotification('点赞失败');
+  }
+};
+
+const voteDown = async (resources) => {
+  resources.down += 1;
+  try {
+    await axios.put(`http://localhost:8080/virtual/downvote/${resources.id}`, resources);
+  } catch (error) {
+    console.error('点踩失败', error);
+    showNotification('点踩失败');
+  }};
   </script>
     
   <style scoped>
@@ -141,6 +169,7 @@
   }
    
   .Resource-block {
+    position: relative;
       width: 10vw;
     display: flex;
     justify-content: space-between;
@@ -241,4 +270,30 @@
 .sidebar-item:hover {
   background-color: #555;
 }
+.resource-votes {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .vote-button {
+    background-color: #eee;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+  }
+
+  .vote-button.up {
+    color: green;
+  }
+
+  .vote-button.down {
+    color: red;
+  }
   </style>

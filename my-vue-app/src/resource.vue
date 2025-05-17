@@ -4,7 +4,7 @@
         <div class="sidebar" v-show="showSidebar">
           <div class="sidebar-item" @click="goTo('/activity')">活动日历</div>
           <div class="sidebar-item" @click="goTo('/resource')">资源分享</div>
-          <div class="sidebar-item" @click="goTo('/virtual')">虚拟空间</div>
+          <div class="sidebar-item" @click="goTo('/virtual')">社区榜样</div>
           <div class="sidebar-item" @click="goTo('/help')">紧急求助</div>
           <div class="sidebar-item" @click="goTo('/success')">首页</div>
         </div>
@@ -19,7 +19,7 @@
               </div>
             <p><strong>名称：</strong>{{ Resource.name }}</p>
             <p><strong>日期：</strong>{{ Resource.time }}</p>
-            <p><strong>地点：</strong>{{ Resource.place }}</p>
+            <p><strong>类别：</strong>{{ Resource.category }}</p>
             <p><strong>编辑人：</strong>{{ Resource.editor }}</p>
             <p><strong>说明：</strong>{{ Resource.introduction }}</p>
           </div>
